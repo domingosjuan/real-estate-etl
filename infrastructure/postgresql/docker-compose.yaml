@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  real_estate_db:
+    image: postgres:12.19-alpine3.20
+    ports:
+      - 5432:5432
+    volumes:
+      - ./scripts/initialize_db_ddl.sql:/docker-entrypoint-initdb.d/initialize_db_ddl.sql
+      - ./scripts/initialize_db_dml.sql:/docker-entrypoint-initdb.d/initialize_db_dml.sql
+      - ./data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_USER=real_estate_user
+      - POSTGRES_DB=real_estate_db
