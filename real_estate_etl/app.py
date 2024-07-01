@@ -1,15 +1,21 @@
 import sys
+import os
 import argparse
 
 import pandas as pd
 
 from extractors.abstractions.abstract_extractor import AbstractExtractor
-from extractors.laundry_options_extractor import LaundryOptionsExtractor
-from extractors.parking_options_extractor import ParkingOptionsExtractor
-from extractors.regions_extractor import RegionsExtractor
-from extractors.locations_extractor import LocationsExtractor
-from extractors.property_type_extractors import PropertyTypeExtractor
-from extractors.property_listing_extractor import PropertyListingExtractor
+from extractors.housing_listing.laundry_options_extractor import LaundryOptionsExtractor
+from extractors.housing_listing.parking_options_extractor import ParkingOptionsExtractor
+from extractors.housing_listing.regions_extractor import RegionsExtractor
+from extractors.housing_listing.locations_extractor import LocationsExtractor
+from extractors.housing_listing.property_type_extractors import PropertyTypeExtractor
+from extractors.housing_listing.property_listing_extractor import PropertyListingExtractor
+from extractors.real_estate_transactions.building_types_extractor import BuildingTypesExtractor
+from extractors.real_estate_transactions.property_type_extractor import PropertyTypesExtractor as RealStatePropertyTypesExtractor
+from extractors.real_estate_transactions.directions_extractor import DirectionsExtractor
+from extractors.real_estate_transactions.cities_extractor import CitiesExtractor
+from extractors.real_estate_transactions.transactions_extractor import TransactionsExtractor
 
 from models.config.db_connection_config import DBConnectionConfig
 
@@ -25,6 +31,16 @@ pipelines = {
             4: LocationsExtractor,
             5: PropertyTypeExtractor,
             6: PropertyListingExtractor
+        }
+    },
+    "real_estate_transactions": {
+        "input_file": "../data/usa_real_state_transactions/real_estate_transactions.csv",
+        "steps": {
+            1: BuildingTypesExtractor,
+            2: RealStatePropertyTypesExtractor,
+            4: DirectionsExtractor,
+            5: CitiesExtractor,
+            6: TransactionsExtractor
         }
     }
 }
@@ -60,6 +76,9 @@ if __name__ == "__main__":
 
     pipeline = pipelines[pipeline]
 
+    if not os.path.exists(pipeline["input_file"]):
+        raise Exception("The specified input file doesn't exists.")
+
     df_source_data = pd.read_csv(filepath_or_buffer=pipeline["input_file"], sep=",")
 
     db_config = DBConnectionConfig(
@@ -78,4 +97,4 @@ if __name__ == "__main__":
         success = pipeline["steps"][step](source_df=df_source_data,target_db_config=db_config, logger=logger).extract()
 
         if not success:
-            raise Exception("The is a processing step failed.")
+            raise Exception("There is a processing step failed.")

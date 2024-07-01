@@ -6,7 +6,10 @@ DROP TABLE IF EXISTS states;
 DROP TABLE IF EXISTS property_types;
 DROP TABLE IF EXISTS laundry_options;
 DROP TABLE IF exists parking_options;
-
+DROP TABLE IF EXISTS usage_types;
+DROP TABLE IF EXISTS directions;
+DROP TABLE IF EXISTS building_types;
+DROP TABLE IF EXISTS transactions;
 
 /*Create DB Structure*/
 CREATE TABLE IF NOT EXISTS states(
@@ -99,4 +102,56 @@ CREATE TABLE IF NOT EXISTS property_listing (
     FOREIGN KEY(property_type_id) REFERENCES property_types(property_type_id),
     FOREIGN KEY(laundry_option_id) REFERENCES laundry_options(laundry_option_id),
     FOREIGN KEY(parking_option_id) REFERENCES parking_options(parking_option_id)
+);
+
+CREATE TABLE IF NOT EXISTS building_types(
+    building_type_id     SERIAL       NOT NULL PRIMARY KEY,
+    description          VARCHAR(100) NOT NULL,
+    active               BOOLEAN      NOT NULL DEFAULT TRUE,
+    utc_datetime_created TIMESTAMP(3) NOT null DEFAULT CURRENT_TIMESTAMP(3),
+    utc_datetime_deleted TIMESTAMP(3),
+    utc_datetime_updated TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+);
+
+CREATE TABLE IF NOT EXISTS directions(
+    direction_id         SERIAL       NOT NULL PRIMARY KEY,
+    description          VARCHAR(100) NOT NULL,
+    active               BOOLEAN      NOT NULL DEFAULT TRUE,
+    utc_datetime_created TIMESTAMP(3) NOT null DEFAULT CURRENT_TIMESTAMP(3),
+    utc_datetime_deleted TIMESTAMP(3),
+    utc_datetime_updated TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+);
+
+CREATE TABLE IF NOT EXISTS cities (
+    city_id              SERIAL       NOT NULL PRIMARY KEY,
+    name                 VARCHAR(100) NOT NULL,
+    state_id             INTEGER,
+    region_id            INTEGER,
+    active               BOOLEAN      NOT NULL DEFAULT TRUE,
+    utc_datetime_created TIMESTAMP(3) NOT null DEFAULT CURRENT_TIMESTAMP(3),
+    utc_datetime_deleted TIMESTAMP(3),
+    utc_datetime_updated TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3)
+);
+
+CREATE TABLE IF NOT EXISTS transactions (
+    transaction_id             SERIAL  NOT NULL PRIMARY KEY,
+    transaction_date           DATE    NOT NULL,
+    property_estimated_value   DECIMAL,
+    property_city_id           INTEGER,
+    property_sales_value       DECIMAL NOT NULL,
+    building_type_id           INTEGER,
+    property_type_id           INTEGER,
+    bedrooms                   INTEGER,
+    bathrooms                  INTEGER,
+    property_carpet_area       DECIMAL,
+    property_tax_rate          DECIMAL,
+    property_face_direction_id INTEGER NOT NULL,
+    utc_datetime_created       TIMESTAMP(3)  NOT null DEFAULT CURRENT_TIMESTAMP(3),
+    utc_datetime_deleted       TIMESTAMP(3),
+    utc_datetime_updated       TIMESTAMP(3)  NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    FOREIGN KEY(building_type_id) REFERENCES building_types(building_type_id),
+    FOREIGN KEY(property_city_id) REFERENCES cities(city_id),
+    FOREIGN KEY(property_type_id) REFERENCES property_types(property_type_id),
+    FOREIGN KEY(property_face_direction_id) REFERENCES directions(direction_id)
 );

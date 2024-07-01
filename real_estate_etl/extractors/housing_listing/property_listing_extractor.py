@@ -183,11 +183,11 @@ class PropertyListingExtractor(AbstractExtractor):
         if records_to_append > 0:
             self._logger.info(f"PropertyListingExtractor.extract There are {records_to_append} records to add to the property listing.")
 
-            # try:
-            df_new_property_listing.to_sql('property_listing', con=self._get_db_engine(), index=False, if_exists='append')
-            # except:
-            #     self._notifier.notify()
-            #     return False
+            try:
+                df_new_property_listing.to_sql('property_listing', con=self._get_db_engine(), index=False, if_exists='append')
+            except:
+                self._notifier.notify()
+                return False
             
             self._logger.info("The property listings were successfully added.")
         else:
