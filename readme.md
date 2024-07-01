@@ -5,6 +5,10 @@ This is a project that takes data from the following datasets and loads them ins
 - https://www.kaggle.com/datasets/austinreese/usa-housing-listings/data
 - https://www.kaggle.com/datasets/subhiarjaria09/real-estate-property-transactions-dataset
 
+## DB Schema
+
+![Database Schema](https://github.com/domingosjuan/real-estate-etl/blob/main/diagrams/data-modeling-sql-db.drawio.png?raw=true)
+
 ### Used Tools
 
 - Python
